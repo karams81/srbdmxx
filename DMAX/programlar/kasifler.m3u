@@ -1,0 +1,11 @@
+#EXTM3U
+#EXTINF:-1 tvg-logo="https://img-tlctv1.mncdn.com/mnresize/200/-/upload/files/2391e3fb-3d05-452f-b3b0-18fe49256ea9.jpg" group-title="KAŞİFLER",KAŞİFLER - 1. Sezon 5. Bölüm
+https://dygvideo.dygdigital.com/api/redirect?PublisherId=27&ReferenceId=EHD_141003&SecretKey=NtvApiSecret2014*
+#EXTINF:-1 tvg-logo="https://img-tlctv1.mncdn.com/mnresize/200/-/upload/files/2391e3fb-3d05-452f-b3b0-18fe49256ea9.jpg" group-title="KAŞİFLER",KAŞİFLER - 1. Sezon 4. Bölüm
+https://dygvideo.dygdigital.com/api/redirect?PublisherId=27&ReferenceId=EHD_141002&SecretKey=NtvApiSecret2014*
+#EXTINF:-1 tvg-logo="https://img-tlctv1.mncdn.com/mnresize/200/-/upload/files/2391e3fb-3d05-452f-b3b0-18fe49256ea9.jpg" group-title="KAŞİFLER",KAŞİFLER - 1. Sezon 3. Bölüm
+https://dygvideo.dygdigital.com/api/redirect?PublisherId=27&ReferenceId=EHD_141001&SecretKey=NtvApiSecret2014*
+#EXTINF:-1 tvg-logo="https://img-tlctv1.mncdn.com/mnresize/200/-/upload/files/2391e3fb-3d05-452f-b3b0-18fe49256ea9.jpg" group-title="KAŞİFLER",KAŞİFLER - 1. Sezon 2. Bölüm
+https://dygvideo.dygdigital.com/api/redirect?PublisherId=27&ReferenceId=EHD_141000&SecretKey=NtvApiSecret2014*
+#EXTINF:-1 tvg-logo="https://img-tlctv1.mncdn.com/mnresize/200/-/upload/files/2391e3fb-3d05-452f-b3b0-18fe49256ea9.jpg" group-title="KAŞİFLER",KAŞİFLER - 1. Sezon 1. Bölüm
+https://dygvideo.dygdigital.com/api/redirect?PublisherId=27&ReferenceId=EHD_140999&SecretKey=NtvApiSecret2014*

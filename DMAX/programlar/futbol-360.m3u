@@ -1,0 +1,11 @@
+#EXTM3U
+#EXTINF:-1 tvg-logo="https://img-tlctv1.mncdn.com/mnresize/200/-/upload/files/49669ddb-1480-41c1-b29b-42a606a6129d.jpg" group-title="FUTBOL 360",FUTBOL 360 - 2. Sezon 5. Bölüm
+https://dygvideo.dygdigital.com/api/redirect?PublisherId=27&ReferenceId=EHD_948872&SecretKey=NtvApiSecret2014*
+#EXTINF:-1 tvg-logo="https://img-tlctv1.mncdn.com/mnresize/200/-/upload/files/49669ddb-1480-41c1-b29b-42a606a6129d.jpg" group-title="FUTBOL 360",FUTBOL 360 - 2. Sezon 4. Bölüm
+https://dygvideo.dygdigital.com/api/redirect?PublisherId=27&ReferenceId=EHD_948871&SecretKey=NtvApiSecret2014*
+#EXTINF:-1 tvg-logo="https://img-tlctv1.mncdn.com/mnresize/200/-/upload/files/49669ddb-1480-41c1-b29b-42a606a6129d.jpg" group-title="FUTBOL 360",FUTBOL 360 - 2. Sezon 3. Bölüm
+https://dygvideo.dygdigital.com/api/redirect?PublisherId=27&ReferenceId=EHD_948870&SecretKey=NtvApiSecret2014*
+#EXTINF:-1 tvg-logo="https://img-tlctv1.mncdn.com/mnresize/200/-/upload/files/49669ddb-1480-41c1-b29b-42a606a6129d.jpg" group-title="FUTBOL 360",FUTBOL 360 - 2. Sezon 2. Bölüm
+https://dygvideo.dygdigital.com/api/redirect?PublisherId=27&ReferenceId=EHD_948869&SecretKey=NtvApiSecret2014*
+#EXTINF:-1 tvg-logo="https://img-tlctv1.mncdn.com/mnresize/200/-/upload/files/49669ddb-1480-41c1-b29b-42a606a6129d.jpg" group-title="FUTBOL 360",FUTBOL 360 - 2. Sezon 1. Bölüm
+https://dygvideo.dygdigital.com/api/redirect?PublisherId=27&ReferenceId=EHD_948868&SecretKey=NtvApiSecret2014*

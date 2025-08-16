@@ -1,0 +1,9 @@
+#EXTM3U
+#EXTINF:-1 tvg-logo="https://img-tlctv1.mncdn.com/mnresize/200/-/upload/files/9e19721e-a9a4-4482-b53c-d8a631efaf8b.jpg" group-title="YÜRÜYEN EVLER",YÜRÜYEN EVLER - 1. Sezon 5. Bölüm
+https://dygvideo.dygdigital.com/api/redirect?PublisherId=27&ReferenceId=EHD_588636&SecretKey=NtvApiSecret2014*
+#EXTINF:-1 tvg-logo="https://img-tlctv1.mncdn.com/mnresize/200/-/upload/files/9e19721e-a9a4-4482-b53c-d8a631efaf8b.jpg" group-title="YÜRÜYEN EVLER",YÜRÜYEN EVLER - 1. Sezon 3. Bölüm
+https://dygvideo.dygdigital.com/api/redirect?PublisherId=27&ReferenceId=EHD_588634&SecretKey=NtvApiSecret2014*
+#EXTINF:-1 tvg-logo="https://img-tlctv1.mncdn.com/mnresize/200/-/upload/files/9e19721e-a9a4-4482-b53c-d8a631efaf8b.jpg" group-title="YÜRÜYEN EVLER",YÜRÜYEN EVLER - 1. Sezon 2. Bölüm
+https://dygvideo.dygdigital.com/api/redirect?PublisherId=27&ReferenceId=EHD_588633&SecretKey=NtvApiSecret2014*
+#EXTINF:-1 tvg-logo="https://img-tlctv1.mncdn.com/mnresize/200/-/upload/files/9e19721e-a9a4-4482-b53c-d8a631efaf8b.jpg" group-title="YÜRÜYEN EVLER",YÜRÜYEN EVLER - 1. Sezon 1. Bölüm
+https://dygvideo.dygdigital.com/api/redirect?PublisherId=27&ReferenceId=EHD_588632&SecretKey=NtvApiSecret2014*
