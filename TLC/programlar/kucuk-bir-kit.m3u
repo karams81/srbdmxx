@@ -1,0 +1,7 @@
+#EXTM3U
+#EXTINF:-1 tvg-logo="https://img-tlctv1.mncdn.com/mnresize/200/-/upload/files/b368ce6d-3c73-4edc-a700-487deee9f7da.jpg" group-title="Küçük Bir Kıt",Küçük Bir Kıt - 1. Sezon 3. Bölüm
+https://dygvideo.dygdigital.com/api/redirect?PublisherId=20&ReferenceId=EHD_435458&SecretKey=NtvApiSecret2014*
+#EXTINF:-1 tvg-logo="https://img-tlctv1.mncdn.com/mnresize/200/-/upload/files/b368ce6d-3c73-4edc-a700-487deee9f7da.jpg" group-title="Küçük Bir Kıt",Küçük Bir Kıt - 1. Sezon 2. Bölüm
+https://dygvideo.dygdigital.com/api/redirect?PublisherId=20&ReferenceId=EHD_435457&SecretKey=NtvApiSecret2014*
+#EXTINF:-1 tvg-logo="https://img-tlctv1.mncdn.com/mnresize/200/-/upload/files/b368ce6d-3c73-4edc-a700-487deee9f7da.jpg" group-title="Küçük Bir Kıt",Küçük Bir Kıt - 1. Sezon 1. Bölüm
+https://dygvideo.dygdigital.com/api/redirect?PublisherId=20&ReferenceId=EHD_435456&SecretKey=NtvApiSecret2014*

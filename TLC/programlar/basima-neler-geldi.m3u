@@ -1,0 +1,7 @@
+#EXTM3U
+#EXTINF:-1 tvg-logo="https://img-tlctv1.mncdn.com/mnresize/200/-/upload/files/0fa60617-7a50-458b-b54d-876c8c15b30d.jpg" group-title="Başıma Neler Geldi",Başıma Neler Geldi - 1. Sezon 3. Bölüm
+https://dygvideo.dygdigital.com/api/redirect?PublisherId=20&ReferenceId=EHD_303939&SecretKey=NtvApiSecret2014*
+#EXTINF:-1 tvg-logo="https://img-tlctv1.mncdn.com/mnresize/200/-/upload/files/0fa60617-7a50-458b-b54d-876c8c15b30d.jpg" group-title="Başıma Neler Geldi",Başıma Neler Geldi - 1. Sezon 2. Bölüm
+https://dygvideo.dygdigital.com/api/redirect?PublisherId=20&ReferenceId=EHD_303938&SecretKey=NtvApiSecret2014*
+#EXTINF:-1 tvg-logo="https://img-tlctv1.mncdn.com/mnresize/200/-/upload/files/0fa60617-7a50-458b-b54d-876c8c15b30d.jpg" group-title="Başıma Neler Geldi",Başıma Neler Geldi - 1. Sezon 1. Bölüm
+https://dygvideo.dygdigital.com/api/redirect?PublisherId=20&ReferenceId=EHD_303937&SecretKey=NtvApiSecret2014*

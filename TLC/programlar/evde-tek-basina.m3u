@@ -1,0 +1,17 @@
+#EXTM3U
+#EXTINF:-1 tvg-logo="https://img-tlctv1.mncdn.com/mnresize/200/-/upload/files/dace6856-7207-4359-b3d6-2116e6ea8cf4.jpg" group-title="Evde Tek Başına",Evde Tek Başına - 2. Sezon 2. Bölüm
+https://dygvideo.dygdigital.com/api/redirect?PublisherId=20&ReferenceId=EHD_210101&SecretKey=NtvApiSecret2014*
+#EXTINF:-1 tvg-logo="https://img-tlctv1.mncdn.com/mnresize/200/-/upload/files/dace6856-7207-4359-b3d6-2116e6ea8cf4.jpg" group-title="Evde Tek Başına",Evde Tek Başına - 2. Sezon 1. Bölüm
+https://dygvideo.dygdigital.com/api/redirect?PublisherId=20&ReferenceId=EHD_210106&SecretKey=NtvApiSecret2014*
+#EXTINF:-1 tvg-logo="https://img-tlctv1.mncdn.com/mnresize/200/-/upload/files/dace6856-7207-4359-b3d6-2116e6ea8cf4.jpg" group-title="Evde Tek Başına",Evde Tek Başına - 1. Sezon 6. Bölüm
+https://dygvideo.dygdigital.com/api/redirect?PublisherId=20&ReferenceId=EHD_159225&SecretKey=NtvApiSecret2014*
+#EXTINF:-1 tvg-logo="https://img-tlctv1.mncdn.com/mnresize/200/-/upload/files/dace6856-7207-4359-b3d6-2116e6ea8cf4.jpg" group-title="Evde Tek Başına",Evde Tek Başına - 1. Sezon 5. Bölüm
+https://dygvideo.dygdigital.com/api/redirect?PublisherId=20&ReferenceId=EHD_159224&SecretKey=NtvApiSecret2014*
+#EXTINF:-1 tvg-logo="https://img-tlctv1.mncdn.com/mnresize/200/-/upload/files/dace6856-7207-4359-b3d6-2116e6ea8cf4.jpg" group-title="Evde Tek Başına",Evde Tek Başına - 1. Sezon 4. Bölüm
+https://dygvideo.dygdigital.com/api/redirect?PublisherId=20&ReferenceId=EHD_159223&SecretKey=NtvApiSecret2014*
+#EXTINF:-1 tvg-logo="https://img-tlctv1.mncdn.com/mnresize/200/-/upload/files/dace6856-7207-4359-b3d6-2116e6ea8cf4.jpg" group-title="Evde Tek Başına",Evde Tek Başına - 1. Sezon 3. Bölüm
+https://dygvideo.dygdigital.com/api/redirect?PublisherId=20&ReferenceId=EHD_159222&SecretKey=NtvApiSecret2014*
+#EXTINF:-1 tvg-logo="https://img-tlctv1.mncdn.com/mnresize/200/-/upload/files/dace6856-7207-4359-b3d6-2116e6ea8cf4.jpg" group-title="Evde Tek Başına",Evde Tek Başına - 1. Sezon 2. Bölüm
+https://dygvideo.dygdigital.com/api/redirect?PublisherId=20&ReferenceId=EHD_159221&SecretKey=NtvApiSecret2014*
+#EXTINF:-1 tvg-logo="https://img-tlctv1.mncdn.com/mnresize/200/-/upload/files/dace6856-7207-4359-b3d6-2116e6ea8cf4.jpg" group-title="Evde Tek Başına",Evde Tek Başına - 1. Sezon 1. Bölüm
+https://dygvideo.dygdigital.com/api/redirect?PublisherId=20&ReferenceId=EHD_159220&SecretKey=NtvApiSecret2014*

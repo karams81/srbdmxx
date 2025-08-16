@@ -1,0 +1,7 @@
+#EXTM3U
+#EXTINF:-1 tvg-logo="https://img-tlctv1.mncdn.com/mnresize/200/-/upload/files/48e93ab7-4cc1-46b1-917c-b9fa5cb7af25.jpg" group-title="Uyanık Ameliyat",Uyanık Ameliyat - 1. Sezon 3. Bölüm
+https://dygvideo.dygdigital.com/api/redirect?PublisherId=20&ReferenceId=EHD_400577&SecretKey=NtvApiSecret2014*
+#EXTINF:-1 tvg-logo="https://img-tlctv1.mncdn.com/mnresize/200/-/upload/files/48e93ab7-4cc1-46b1-917c-b9fa5cb7af25.jpg" group-title="Uyanık Ameliyat",Uyanık Ameliyat - 1. Sezon 2. Bölüm
+https://dygvideo.dygdigital.com/api/redirect?PublisherId=20&ReferenceId=EHD_400576&SecretKey=NtvApiSecret2014*
+#EXTINF:-1 tvg-logo="https://img-tlctv1.mncdn.com/mnresize/200/-/upload/files/48e93ab7-4cc1-46b1-917c-b9fa5cb7af25.jpg" group-title="Uyanık Ameliyat",Uyanık Ameliyat - 1. Sezon 1. Bölüm
+https://dygvideo.dygdigital.com/api/redirect?PublisherId=20&ReferenceId=EHD_400575&SecretKey=NtvApiSecret2014*

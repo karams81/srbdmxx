@@ -1,0 +1,5 @@
+#EXTM3U
+#EXTINF:-1 tvg-logo="https://img-tlctv1.mncdn.com/mnresize/200/-/upload/files/6183cbfe-b3cc-4276-89b6-4dcc2d081927.jpg" group-title="Yeni Yıl Kapışması",Yeni Yıl Kapışması - 1. Sezon 2. Bölüm
+https://dygvideo.dygdigital.com/api/redirect?PublisherId=20&ReferenceId=EHD_324002&SecretKey=NtvApiSecret2014*
+#EXTINF:-1 tvg-logo="https://img-tlctv1.mncdn.com/mnresize/200/-/upload/files/6183cbfe-b3cc-4276-89b6-4dcc2d081927.jpg" group-title="Yeni Yıl Kapışması",Yeni Yıl Kapışması - 1. Sezon 1. Bölüm
+https://dygvideo.dygdigital.com/api/redirect?PublisherId=20&ReferenceId=EHD_324001&SecretKey=NtvApiSecret2014*
