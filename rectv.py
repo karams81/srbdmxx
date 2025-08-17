@@ -113,6 +113,8 @@ def generate_m3u():
         print("\n📺 Canlı yayınlar taranıyor...", file=sys.stderr)
         live_base_url = f"{MAIN_URL}/api/channel/by/filtres/0/0/"
         all_channels = get_all_pages(live_base_url, "Canlı Yayınlar")
+        print(f"-> Tarama tamamlandı. Toplam {len(all_channels)} canlı yayın bulundu.", file=sys.stderr)
+        
         categories = {}
         for channel in all_channels:
             if not isinstance(channel, dict): continue
@@ -134,68 +136,76 @@ def generate_m3u():
         print("\n🎬 Mevcut TÜM filmler taranıyor. Bu işlem uzun sürebilir...", file=sys.stderr)
         all_movies_base_url = f"{MAIN_URL}/api/movie/by/filtres/0/created/"
         all_movies = get_all_pages(all_movies_base_url, "Tüm Filmler")
+        print(f"-> Tarama tamamlandı. Toplam {len(all_movies)} film bulundu.", file=sys.stderr)
         
-        movie_groups = {}
-        for movie in all_movies:
-            # --- YENİ HATA DÜZELTMESİ BURADA ---
-            genres_data = movie.get('genres', 'Diğer Filmler')
-            cat_name = ""
-            if isinstance(genres_data, list):
-                genre_names = []
-                for item in genres_data:
-                    if isinstance(item, dict):
-                        # Eğer öğe bir sözlükse, 'title' anahtarından değeri al
-                        genre_names.append(item.get('title', ''))
-                    elif isinstance(item, str):
-                        # Eğer öğe bir metinse, doğrudan ekle
-                        genre_names.append(item)
-                # Sadece geçerli (boş olmayan) tür isimlerini birleştir
-                cat_name = ', '.join(filter(None, genre_names))
-            else:
-                # Eğer veri zaten bir metinse, olduğu gibi kullan
-                cat_name = str(genres_data).strip()
-            
-            if not cat_name: cat_name = "Diğer Filmler"
-            # --- DÜZELTME SONU ---
-            
-            if cat_name not in movie_groups: movie_groups[cat_name] = []
-            movie_groups[cat_name].append(movie)
+        if all_movies:
+            movie_groups = {}
+            for movie in tqdm(all_movies, desc="Filmler İşleniyor"):
+                try:
+                    genres_data = movie.get('genres', 'Diğer Filmler')
+                    cat_name = ""
+                    if isinstance(genres_data, list):
+                        genre_names = [item.get('title', '') if isinstance(item, dict) else str(item) for item in genres_data]
+                        cat_name = ', '.join(filter(None, genre_names))
+                    else:
+                        cat_name = str(genres_data).strip()
+                    
+                    if not cat_name: cat_name = "Diğer Filmler"
+                    
+                    if cat_name not in movie_groups: movie_groups[cat_name] = []
+                    movie_groups[cat_name].append(movie)
+                except Exception as e:
+                    movie_title = movie.get('title', 'ID Bilinmiyor')
+                    print(f"\n[HATA] '{movie_title}' filmi işlenirken hata: {e}. Bu film atlanıyor.", file=sys.stderr)
+                    continue
 
-        for cat_name, movies in movie_groups.items():
-            for movie in movies:
-                for source in movie.get('sources', []):
-                    if (url := source.get('url')) and isinstance(url, str) and url.endswith('.m3u8'):
-                        name = movie.get('title', 'Bilinmeyen Film')
-                        f.write(f'#EXTINF:-1 tvg-id="{movie.get("id", "")}" tvg-name="{name}" tvg-logo="{movie.get("image", "")}" group-title="Filmler;{cat_name}",{name}\n')
-                        f.write(f'#EXTVLCOPT:http-user-agent={HEADERS["User-Agent"]}\n')
-                        f.write(f'#EXTVLCOPT:http-referrer={HEADERS["Referer"]}\n')
-                        f.write(f"{url}\n\n")
-                        break
+            for cat_name, movies in movie_groups.items():
+                for movie in movies:
+                    for source in movie.get('sources', []):
+                        if (url := source.get('url')) and isinstance(url, str) and url.endswith('.m3u8'):
+                            name = movie.get('title', 'Bilinmeyen Film')
+                            f.write(f'#EXTINF:-1 tvg-id="{movie.get("id", "")}" tvg-name="{name}" tvg-logo="{movie.get("image", "")}" group-title="Filmler;{cat_name}",{name}\n')
+                            f.write(f'#EXTVLCOPT:http-user-agent={HEADERS["User-Agent"]}\n')
+                            f.write(f'#EXTVLCOPT:http-referrer={HEADERS["Referer"]}\n')
+                            f.write(f"{url}\n\n")
+                            break
+        else:
+            print("-> Hiç film bulunamadığı için film bölümü atlanıyor.", file=sys.stderr)
+
 
         # 3. Diziler (TÜMÜ)
         print("\n🎞️ Mevcut TÜM diziler taranıyor. Bu işlem de uzun sürebilir...", file=sys.stderr)
         all_series_base_url = f"{MAIN_URL}/api/serie/by/filtres/0/created/"
         all_series = get_all_pages(all_series_base_url, "Tüm Diziler")
+        print(f"-> Tarama tamamlandı. Toplam {len(all_series)} dizi bulundu.", file=sys.stderr)
         
-        unique_series = list({s['id']: s for s in all_series if 'id' in s}.values())
-        print(f"\nToplam {len(unique_series)} benzersiz dizi için bölümler taranıyor...", file=sys.stderr)
-        
-        for serie in tqdm(unique_series, desc="Dizi Bölümleri İşleniyor"):
-            seasons = get_episodes_for_serie(serie)
-            serie_name, serie_image = serie.get('title', 'Bilinmeyen Dizi'), serie.get('image', '')
-            for season in seasons:
-                for episode in season.get('episodes', []):
-                    for source in episode.get('sources', []):
-                        if (url := source.get('url')) and isinstance(url, str) and url.endswith('.m3u8'):
-                            s_num = ''.join(filter(str.isdigit, season.get('title', ''))) or '0'
-                            e_num = ''.join(filter(str.isdigit, episode.get('title', ''))) or '0'
-                            ep_name = f"{serie_name} S{s_num.zfill(2)}E{e_num.zfill(2)}"
-                            
-                            f.write(f'#EXTINF:-1 tvg-id="{episode.get("id", "")}" tvg-name="{ep_name}" tvg-logo="{serie_image}" group-title="Diziler;{serie_name}",{ep_name}\n')
-                            f.write(f'#EXTVLCOPT:http-user-agent={HEADERS["User-Agent"]}\n')
-                            f.write(f'#EXTVLCOPT:http-referrer={HEADERS["Referer"]}\n')
-                            f.write(f"{url}\n\n")
-                            break
+        if all_series:
+            unique_series = list({s['id']: s for s in all_series if 'id' in s}.values())
+            print(f"\n-> Toplam {len(unique_series)} benzersiz dizi için bölümler taranıyor...", file=sys.stderr)
+            
+            for serie in tqdm(unique_series, desc="Dizi Bölümleri İşleniyor"):
+                try:
+                    seasons = get_episodes_for_serie(serie)
+                    serie_name, serie_image = serie.get('title', 'Bilinmeyen Dizi'), serie.get('image', '')
+                    for season in seasons:
+                        for episode in season.get('episodes', []):
+                            for source in episode.get('sources', []):
+                                if (url := source.get('url')) and isinstance(url, str) and url.endswith('.m3u8'):
+                                    s_num = ''.join(filter(str.isdigit, season.get('title', ''))) or '0'
+                                    e_num = ''.join(filter(str.isdigit, episode.get('title', ''))) or '0'
+                                    ep_name = f"{serie_name} S{s_num.zfill(2)}E{e_num.zfill(2)}"
+                                    f.write(f'#EXTINF:-1 tvg-id="{episode.get("id", "")}" tvg-name="{ep_name}" tvg-logo="{serie_image}" group-title="Diziler;{serie_name}",{ep_name}\n')
+                                    f.write(f'#EXTVLCOPT:http-user-agent={HEADERS["User-Agent"]}\n')
+                                    f.write(f'#EXTVLCOPT:http-referrer={HEADERS["Referer"]}\n')
+                                    f.write(f"{url}\n\n")
+                                    break
+                except Exception as e:
+                    serie_title = serie.get('title', 'ID Bilinmiyor')
+                    print(f"\n[HATA] '{serie_title}' dizisi işlenirken hata: {e}. Bu dizi atlanıyor.", file=sys.stderr)
+                    continue
+        else:
+            print("-> Hiç dizi bulunamadığı için dizi bölümü atlanıyor.", file=sys.stderr)
+
 
     print(f"\n✅ Playlist oluşturma başarıyla tamamlandı: {OUTPUT_FILENAME}", file=sys.stderr)
 
