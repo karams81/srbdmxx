@@ -7,7 +7,6 @@ import sys
 from typing import Dict, List, Optional, Set
 
 # API Konfigürasyon
-# Bu URL artık sadece GitHub'dan yeni adres alınamadığında kullanılacak bir yedek.
 DEFAULT_BASE_URL = 'https://m.prectv51.sbs'
 SOURCE_URL = 'https://raw.githubusercontent.com/kerimmkirac/cs-kerim2/main/RecTV/src/main/kotlin/com/kerimmkirac/RecTV.kt'
 API_KEY = '4F5A9C3D9A86FA54EACEDDD635185/c3c5bd17-e37b-4b94-a944-8a3688a30452'
@@ -63,7 +62,7 @@ def fetch_data(url: str) -> Optional[List[Dict]]:
         return None
 
 def process_content(content: Dict, category_name: str) -> str:
-    """İçeriği M3U formatına dönüştür"""
+    """İçeriği (Canlı TV/Film) M3U formatına dönüştür"""
     m3u_lines = []
     if not content.get('sources'):
         return ''
@@ -76,28 +75,51 @@ def process_content(content: Dict, category_name: str) -> str:
 
             m3u_lines.append(
                 f'#EXTINF:-1 tvg-id="{content_id}" tvg-name="{title}" '
-                f'tvg-logo="{image}" group-title="{category_name}", {title}\n'
+                f'tvg-logo="{image}" group-title="{category_name}",{title}\n'
                 f'#EXTVLCOPT:http-user-agent={USER_AGENT}\n'
                 f'#EXTVLCOPT:http-referrer={REFERER}\n'
                 f"{source['url']}\n"
             )
     return ''.join(m3u_lines)
 
-def main():
-    # --- DEĞİŞTİRİLEN BÖLÜM BAŞLANGICI ---
-    # Base URL'yi belirle: Öncelik her zaman dinamik olarak GitHub'dan alınanda.
-    base_url = get_dynamic_base_url()
+# --- YENİ FONKSİYON BAŞLANGICI ---
+def process_episode_content(episode: Dict, serie_title: str, serie_image: str) -> str:
+    """Dizi bölümü verisini M3U formatına dönüştür"""
+    m3u_lines = []
+    if not episode.get('sources'):
+        return ''
 
-    # Eğer dinamik URL alınamazsa veya çalışmıyorsa, script'teki varsayılan (eski) URL'yi dene.
+    for source in episode['sources']:
+        if source.get('type') == 'm3u8' and source.get('url'):
+            season_num = episode.get('season', 0)
+            episode_num = episode.get('episode', 0)
+            episode_title = episode.get('title', '')
+            
+            # Oynatıcıda görünecek başlığı formatla: Dizi Adı - S01E01 - Bölüm Adı
+            full_title = f"{serie_title} - S{season_num:02d}E{episode_num:02d} - {episode_title}"
+            
+            # Bölüm için ana dizinin logosunu kullan
+            image = serie_image
+            content_id = episode.get('id', '')
+
+            m3u_lines.append(
+                f'#EXTINF:-1 tvg-id="{content_id}" tvg-name="{full_title}" '
+                f'tvg-logo="{image}" group-title="{serie_title}",{full_title}\n'
+                f'#EXTVLCOPT:http-user-agent={USER_AGENT}\n'
+                f'#EXTVLCOPT:http-referrer={REFERER}\n'
+                f"{source['url']}\n"
+            )
+    return ''.join(m3u_lines)
+# --- YENİ FONKSİYON SONU ---
+
+def main():
+    base_url = get_dynamic_base_url()
     if not is_base_url_working(base_url):
         print(f"Dinamik URL ({base_url}) çalışmıyor. Varsayılan URL deneniyor...", file=sys.stderr)
         base_url = DEFAULT_BASE_URL
-
-    # Eğer hala çalışan bir URL bulunamazsa, programı hata mesajıyla sonlandır.
     if not is_base_url_working(base_url):
         print("HATA: Hiçbir geçerli ve çalışan Base URL bulunamadı. Script sonlandırılıyor.", file=sys.stderr)
         sys.exit(1)
-    # --- DEĞİŞTİRİLEN BÖLÜM SONU ---
 
     print(f"Kullanılan Aktif Base URL: {base_url}", file=sys.stderr)
 
@@ -118,22 +140,49 @@ def main():
         "19": "Belgesel Filmleri", "4": "Bilim Kurgu", "2": "Dram", "10": "Fantastik",
         "3": "Komedi", "8": "Korku", "17": "Macera", "5": "Romantik"
     }
-
     for category_id, category_name in movie_categories.items():
         print(f"- {category_name} kategorisi işleniyor.", file=sys.stderr)
-        for page in range(8):  # 0-7 arası sayfalar
+        for page in range(8):
             url = f"{base_url}/api/movie/by/filtres/{category_id}/created/{page}{SUFFIX}"
             if data := fetch_data(url):
                 for content in data:
                     m3u_content.append(process_content(content, category_name))
 
-    # DİZİLER
-    print("Diziler işleniyor...", file=sys.stderr)
-    for page in range(8):  # 0-7 arası sayfalar
+    # --- DEĞİŞTİRİLEN BÖLÜM BAŞLANGICI: DİZİLER ve BÖLÜMLERİ ---
+    print("Diziler ve bölümleri işleniyor...", file=sys.stderr)
+    
+    # Önce tüm dizilerin listesini alalım
+    series_list = []
+    for page in range(8): # İlk 8 sayfadaki dizileri al
         url = f"{base_url}/api/serie/by/filtres/0/created/{page}{SUFFIX}"
         if data := fetch_data(url):
-            for content in data:
-                m3u_content.append(process_content(content, "Son Diziler"))
+            series_list.extend(data)
+        else:
+            break # Veri gelmezse döngüyü kır
+
+    # Şimdi her bir dizi için bölümlerini çekelim
+    processed_series_ids = set()
+    for serie in series_list:
+        serie_id = serie.get('id')
+        if not serie_id or serie_id in processed_series_ids:
+            continue
+        
+        processed_series_ids.add(serie_id)
+        serie_title = serie.get('title', 'Bilinmeyen Dizi')
+        serie_image = serie.get('image', '')
+        print(f"- '{serie_title}' dizisinin bölümleri alınıyor...", file=sys.stderr)
+        
+        # Bu diziye ait bölümlerin sayfalarını gez
+        for page in range(20): # Bir dizide en fazla 20 sayfa bölüm olduğunu varsayalım
+            episodes_url = f"{base_url}/api/episode/by/serie/{serie_id}/0/{page}{SUFFIX}"
+            if episodes_data := fetch_data(episodes_url):
+                if not episodes_data: # Sayfada bölüm yoksa bu dizi için aramayı bitir
+                    break
+                for episode in episodes_data:
+                    m3u_content.append(process_episode_content(episode, serie_title, serie_image))
+            else:
+                break # Bölüm verisi alınamazsa sonraki diziye geç
+    # --- DEĞİŞTİRİLEN BÖLÜM SONU ---
 
     # Dosyaya yaz
     output_filename = 'rectv_full.m3u'
