@@ -141,16 +141,24 @@ def generate_m3u():
 
         # 2. Filmler (TÜMÜ)
         print("\n🎬 Mevcut TÜM filmler taranıyor. Bu işlem uzun sürebilir...", file=sys.stderr)
-        # Kategori listesi yerine doğrudan "Tüm Filmler" (filtre ID: 0) uç noktasını kullanıyoruz.
         all_movies_base_url = f"{MAIN_URL}/api/movie/by/filtres/0/created/"
         all_movies = get_all_pages(all_movies_base_url, "Tüm Filmler")
         
-        # Filmleri kendi içinde kategorilere ayırarak yazdır
         movie_groups = {}
         for movie in all_movies:
-            # Filmin kategorisini al, kategori yoksa "Diğer Filmler" olarak ata
-            cat_name = movie.get('genres', 'Diğer Filmler').strip()
+            # --- HATA DÜZELTMESİ BURADA ---
+            genres = movie.get('genres', 'Diğer Filmler')
+            cat_name = ""
+            if isinstance(genres, list):
+                # Eğer 'genres' bir liste ise (örn: ['Aksiyon', 'Macera']), elemanları birleştir.
+                cat_name = ', '.join(genres)
+            else:
+                # Eğer 'genres' bir metin ise, boşlukları temizle.
+                cat_name = str(genres).strip()
+            
             if not cat_name: cat_name = "Diğer Filmler"
+            # --- DÜZELTME SONU ---
+            
             if cat_name not in movie_groups: movie_groups[cat_name] = []
             movie_groups[cat_name].append(movie)
 
@@ -159,24 +167,20 @@ def generate_m3u():
                 for source in movie.get('sources', []):
                     if (url := source.get('url')) and isinstance(url, str) and url.endswith('.m3u8'):
                         name = movie.get('title', 'Bilinmeyen Film')
-                        # Grup başlığını "Filmler" ana grubu ve alt kategori olarak düzenle
                         f.write(f'#EXTINF:-1 tvg-id="{movie.get("id", "")}" tvg-name="{name}" tvg-logo="{movie.get("image", "")}" group-title="Filmler;{cat_name}",{name}\n')
                         f.write(f'#EXTVLCOPT:http-user-agent={HEADERS["User-Agent"]}\n')
                         f.write(f'#EXTVLCOPT:http-referrer={HEADERS["Referer"]}\n')
                         f.write(f"{url}\n\n")
-                        break # İlk m3u8 kaynağını bulunca diğer kaynakları arama
+                        break
 
         # 3. Diziler (TÜMÜ)
         print("\n🎞️ Mevcut TÜM diziler taranıyor. Bu işlem de uzun sürebilir...", file=sys.stderr)
-        # Kategori listesi yerine doğrudan "Tüm Diziler" (filtre ID: 0) uç noktasını kullanıyoruz.
         all_series_base_url = f"{MAIN_URL}/api/serie/by/filtres/0/created/"
         all_series = get_all_pages(all_series_base_url, "Tüm Diziler")
         
-        # Tekrarlanan dizileri engellemek için ID'lerine göre benzersiz bir liste oluştur
         unique_series = list({s['id']: s for s in all_series if 'id' in s}.values())
         print(f"\nToplam {len(unique_series)} benzersiz dizi için bölümler taranıyor...", file=sys.stderr)
         
-        # Her bir benzersiz dizi için bölüm bilgilerini çek
         for serie in tqdm(unique_series, desc="Dizi Bölümleri İşleniyor"):
             seasons = get_episodes_for_serie(serie)
             serie_name, serie_image = serie.get('title', 'Bilinmeyen Dizi'), serie.get('image', '')
@@ -184,17 +188,15 @@ def generate_m3u():
                 for episode in season.get('episodes', []):
                     for source in episode.get('sources', []):
                         if (url := source.get('url')) and isinstance(url, str) and url.endswith('.m3u8'):
-                            # Sezon ve bölüm numaralarını başlıktan temiz bir şekilde al
                             s_num = ''.join(filter(str.isdigit, season.get('title', ''))) or '0'
                             e_num = ''.join(filter(str.isdigit, episode.get('title', ''))) or '0'
                             ep_name = f"{serie_name} S{s_num.zfill(2)}E{e_num.zfill(2)}"
                             
-                            # Grup başlığını "Diziler" ana grubu ve dizi adı olarak düzenle
                             f.write(f'#EXTINF:-1 tvg-id="{episode.get("id", "")}" tvg-name="{ep_name}" tvg-logo="{serie_image}" group-title="Diziler;{serie_name}",{ep_name}\n')
                             f.write(f'#EXTVLCOPT:http-user-agent={HEADERS["User-Agent"]}\n')
                             f.write(f'#EXTVLCOPT:http-referrer={HEADERS["Referer"]}\n')
                             f.write(f"{url}\n\n")
-                            break # İlk m3u8 kaynağını bulunca döngüden çık
+                            break
 
     print(f"\n✅ Playlist oluşturma başarıyla tamamlandı: {OUTPUT_FILENAME}", file=sys.stderr)
 
