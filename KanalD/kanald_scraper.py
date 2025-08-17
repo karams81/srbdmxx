@@ -2,14 +2,15 @@
 # -*- coding: utf-8 -*-
 
 """
-Kanal D scraper (yalnızca M3U üretir)
+Kanal D Dizi Scraper (yalnızca M3U üretir)
+- Sadece /diziler sayfasını tarar.
 - all.m3u       → bu .py dosyasının olduğu klasöre
 - programlar/* → her dizi için ayrı M3U (aynı klasör altındaki 'programlar' klasörüne)
 
 Kullanım:
   python kanald_scraper.py
-  python kanald_scraper.py 10      (10. programdan başla)
-  python kanald_scraper.py 10 50   (10. programdan 50. programa kadar)
+  python kanald_scraper.py 5      (5. diziden başla)
+  python kanald_scraper.py 5 10   (5. diziden 10. diziye kadar)
 
 Gereksinimler:
   pip install requests beautifulsoup4 tqdm python-slugify
@@ -31,11 +32,11 @@ from requests.adapters import HTTPAdapter, Retry
 from slugify import slugify
 
 # ============================
-# ÇIKTI KONUMU (.py ile aynı klasör)
+# ÇIKTI KONUMU
 # ============================
 BASE_DIR = Path(__file__).resolve().parent
 ALL_M3U_DIR = str(BASE_DIR)
-ALL_M3U_NAME = "KanalD"
+ALL_M3U_NAME = "KanalD-Diziler" # Dosya adını daha açıklayıcı yaptım
 SERIES_M3U_DIR = str(BASE_DIR / "programlar")
 SERIES_MASTER = False
 
@@ -60,6 +61,7 @@ def create_m3us(channel_folder_path: str,
                 master: bool = False,
                 base_url: str = "") -> None:
     _ensure_dir(channel_folder_path)
+    # ... (Bu fonksiyonun içeriği öncekiyle aynı, değişiklik yok)
     master_lines: List[str] = ["#EXTM3U"] if master else []
     if base_url and not base_url.endswith(("/", "\\")):
         base_url = base_url + "/"
@@ -88,10 +90,12 @@ def create_m3us(channel_folder_path: str,
         master_path = os.path.join(channel_folder_path, "0.m3u")
         _atomic_write(master_path, "\n".join(master_lines) + "\n")
 
+
 def create_single_m3u(channel_folder_path: str,
                       data: List[Dict[str, Any]],
                       custom_path: str = "0") -> None:
     _ensure_dir(channel_folder_path)
+    # ... (Bu fonksiyonun içeriği öncekiyle aynı, değişiklik yok)
     master_path = os.path.join(channel_folder_path, f"{custom_path}.m3u")
     lines: List[str] = ["#EXTM3U"]
     for serie in (data or []):
@@ -109,11 +113,12 @@ def create_single_m3u(channel_folder_path: str,
     _atomic_write(master_path, "\n".join(lines) + "\n")
 
 # ============================
-# KANAL D SCRAPER (GÜNCELLENMİŞ)
+# KANAL D SCRAPER (SADECE DİZİLER)
 # ============================
 
 BASE_URL = "https://www.kanald.com.tr/"
-PROGRAMS_URL = urljoin(BASE_URL, "programlar")
+# !!! DEĞİŞİKLİK: Hedefi /programlar yerine /diziler olarak güncelledik
+TARGET_URL = urljoin(BASE_URL, "diziler")
 VOD_API_URL = "https://www.kanald.com.tr/actions/media"
 
 REQUEST_TIMEOUT = 20
@@ -124,11 +129,10 @@ MAX_RETRIES = 5
 DEFAULT_HEADERS = {
     "Referer": BASE_URL,
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36",
-    "X-Requested-With": "XMLHttpRequest",
 }
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s | %(levelname)-8s | %(message)s", datefmt="%H:%M:%S")
-log = logging.getLogger("kanald-scraper")
+log = logging.getLogger("kanald-dizi-scraper")
 
 SESSION = requests.Session()
 retries = Retry(total=MAX_RETRIES, backoff_factor=BACKOFF_FACTOR, status_forcelist=(500, 502, 503, 504))
@@ -145,68 +149,63 @@ def get_soup(url: str) -> Optional[BeautifulSoup]:
         log.warning("GET %s hatası: %s", url, e)
         return None
 
-def get_all_programs() -> List[Dict[str, str]]:
-    """Tüm programların listesini çeker (sayfalamayı destekler)."""
-    log.info("Tüm programlar listesi alınıyor...")
-    all_programs: List[Dict[str, str]] = []
+def get_all_series() -> List[Dict[str, str]]:
+    """Tüm dizilerin listesini çeker (sayfalamayı destekler)."""
+    log.info("Tüm diziler listesi alınıyor...")
+    all_series: List[Dict[str, str]] = []
     page = 1
     while True:
-        paginated_url = f"{PROGRAMS_URL}?p={page}"
+        paginated_url = f"{TARGET_URL}?p={page}"
         log.info("Sayfa %d taranıyor...", page)
         
         soup = get_soup(paginated_url)
         if not soup:
-            log.warning("Programlar sayfası %d alınamadı, döngü sonlandırılıyor.", page)
+            log.warning("Diziler sayfası %d alınamadı, döngü sonlandırılıyor.", page)
             break
 
-        program_items = soup.select("div.archive-item a")
+        series_items = soup.select("div.archive-item a")
         
-        if not program_items:
+        if not series_items:
             log.info("Son sayfaya ulaşıldı (sayfa %d).", page)
             break
 
-        for item in program_items:
+        for item in series_items:
             url = item.get("href")
             if not url: continue
             
             name_tag = item.select_one("div.title")
-            name = name_tag.get_text(strip=True) if name_tag else "İsimsiz Program"
+            name = name_tag.get_text(strip=True) if name_tag else "İsimsiz Dizi"
             
             img_tag = item.select_one("img.desktop-poster")
             img = img_tag.get("data-src") or img_tag.get("src") if img_tag else ""
 
-            all_programs.append({
+            all_series.append({
                 "name": name,
                 "url": urljoin(BASE_URL, url),
                 "img": urljoin(BASE_URL, img)
             })
         
         page += 1
-        time.sleep(0.1) # Sunucuyu yormamak için küçük bir bekleme
+        time.sleep(0.1)
 
-    log.info("Tarama tamamlandı. Toplam %d program bulundu.", len(all_programs))
-    return all_programs
+    log.info("Tarama tamamlandı. Toplam %d dizi bulundu.", len(all_series))
+    return all_series
 
-def get_all_episodes_for_program(program_url: str) -> List[Dict[str, str]]:
-    """Bir programın tüm bölümlerini ve video ID'lerini çeker."""
+def get_all_episodes_for_series(series_url: str) -> List[Dict[str, str]]:
+    """Bir dizinin tüm bölümlerini ve video ID'lerini çeker."""
     all_episodes: List[Dict[str, str]] = []
-    episodes_url = urljoin(program_url.rstrip('/') + '/', "bolumler")
+    episodes_url = urljoin(series_url.rstrip('/') + '/', "bolumler")
     
     page = 1
     while True:
         paginated_url = f"{episodes_url}?p={page}"
         soup = get_soup(paginated_url)
-        if not soup:
-            log.warning("%s için bölüm sayfası %d alınamadı.", program_url, page)
-            break
+        if not soup: break
 
         episode_items = soup.select("div.episode-item a")
-        if not episode_items:
-            break
+        if not episode_items: break
         
         for item in episode_items:
-            url = item.get("href")
-            if not url: continue
             media_id = item.get("data-media-id")
             if not media_id: continue
             title_tag = item.select_one(".title")
@@ -223,7 +222,7 @@ def get_stream_url_from_media_id(media_id: str) -> Optional[str]:
     time.sleep(REQUEST_PAUSE)
     try:
         payload = {"id": media_id}
-        r = SESSION.post(VOD_API_URL, data=payload, timeout=REQUEST_TIMEOUT)
+        r = SESSION.post(VOD_API_URL, data=payload, timeout=REQUEST_TIMEOUT, headers={"X-Requested-With": "XMLHttpRequest"})
         r.raise_for_status()
         data = r.json()
         if data.get("status") == "success" and "media" in data:
@@ -237,31 +236,31 @@ def get_stream_url_from_media_id(media_id: str) -> Optional[str]:
 
 def run(start: int = 0, end: int = 0) -> Dict[str, Any]:
     output: List[Dict[str, Any]] = []
-    programs_list = get_all_programs()
-    if not programs_list:
-        log.error("Hiç program bulunamadı. İşlem durduruluyor.")
+    series_list = get_all_series()
+    if not series_list:
+        log.error("Hiç dizi bulunamadı. İşlem durduruluyor.")
         return {"programs": []}
 
-    end_index = len(programs_list) if end == 0 else min(end, len(programs_list))
+    end_index = len(series_list) if end == 0 else min(end, len(series_list))
     start_index = max(0, start)
 
-    for i in tqdm(range(start_index, end_index), desc="Programlar"):
-        program = programs_list[i]
-        log.info("İşleniyor: %d/%d | %s", i + 1, end_index, program.get("name", ""))
-        episodes = get_all_episodes_for_program(program["url"])
+    for i in tqdm(range(start_index, end_index), desc="Diziler"):
+        series = series_list[i]
+        log.info("İşleniyor: %d/%d | %s", i + 1, end_index, series.get("name", ""))
+        episodes = get_all_episodes_for_series(series["url"])
         if not episodes:
-            log.warning("%s için hiç bölüm bulunamadı.", program.get("name"))
+            log.warning("%s için hiç bölüm bulunamadı.", series.get("name"))
             continue
-        temp_program = dict(program)
-        temp_program["episodes"] = []
-        for ep in tqdm(episodes, desc=f"Bölümler ({program['name']})", leave=False):
+        temp_series = dict(series)
+        temp_series["episodes"] = []
+        for ep in tqdm(episodes, desc=f"Bölümler ({series['name']})", leave=False):
             stream_url = get_stream_url_from_media_id(ep["media_id"])
             if stream_url:
                 temp_episode = dict(ep)
                 temp_episode["stream_url"] = stream_url
-                temp_program["episodes"].append(temp_episode)
-        if temp_program["episodes"]:
-            output.append(temp_program)
+                temp_series["episodes"].append(temp_episode)
+        if temp_series["episodes"]:
+            output.append(temp_series)
     return {"programs": output}
 
 def save_outputs(data: Dict[str, Any]) -> None:
