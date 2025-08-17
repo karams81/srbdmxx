@@ -2,19 +2,20 @@ name: Generate M3U Playlist
 
 on:
   schedule:
-    - cron: '0 */6 * * *'  # Her 6 saatte bir
-  workflow_dispatch:
+    - cron: '0 */6 * * *'  # Her 6 saatte bir otomatik çalışır
+  workflow_dispatch: # Manuel olarak çalıştırma butonu ekler
 
 jobs:
   generate:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 20 # İşlem en fazla 20 dakika sürebilir
 
     permissions:
-      contents: write
+      contents: write # Kodun repoya yazma izni
 
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout repository
+      uses: actions/checkout@v4
 
     - name: Set up Python
       uses: actions/setup-python@v4
@@ -22,12 +23,12 @@ jobs:
         python-version: '3.10'
 
     - name: Install dependencies
-      run: pip install requests
+      # Gerekli olan requests ve tqdm kütüphanelerini yükler
+      run: pip install requests tqdm
 
     - name: Generate M3U
-      env:
-        API_KEY: ${{ secrets.API_KEY }}
       run: |
+        # Python scriptini çalıştırır
         python rectv.py
         echo "Oluşturulan dosya boyutu: $(du -h rectv_full.m3u)"
         echo "Toplam satır: $(wc -l < rectv_full.m3u)"
@@ -36,6 +37,8 @@ jobs:
       run: |
         git config --global user.name "GitHub Actions"
         git config --global user.email "actions@github.com"
+        # Sadece rectv_full.m3u dosyasını ekler
         git add rectv_full.m3u
-        git diff --cached --quiet || git commit -m "Auto: M3U Update $(date +'%Y-%m-%d %H:%M')"
+        # Eğer dosyada bir değişiklik varsa commit atar, yoksa atmaz
+        git diff --cached --quiet || git commit -m "Otomatik Güncelleme: M3U Listesi $(date +'%Y-%m-%d %H:%M')"
         git push
