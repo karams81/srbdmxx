@@ -15,10 +15,18 @@ PROXY_URL_FORMAT = "https://1.nejyoner19.workers.dev/?url={url}"
 OUTPUT_FILENAME = "rectv_full.m3u" # YML dosyası ile uyumlu isim
 
 def find_working_main_url() -> str:
-    """45-100 arası domainleri tarar ve içinde geçerli .m3u8 linki olan ilk sunucuyu bulur."""
-    print("🚀 En iyi sunucu aranıyor (45-100)...", file=sys.stderr)
-    for i in range(45, 101):
+    """
+    40-120 arası domainleri tarar ve içinde geçerli .m3u8 linki olan ilk sunucuyu bulur.
+    """
+    # --- DEĞİŞİKLİK BURADA ---
+    # Arama aralığı genişletildi.
+    search_range_start = 40
+    search_range_end = 120
+    print(f"🚀 En iyi sunucu aranıyor ({search_range_start}-{search_range_end})...", file=sys.stderr)
+    
+    for i in range(search_range_start, search_range_end + 1):
         base_url = f"https://m.prectv{i}.sbs"
+        # Test için en garanti yol olan filmlerin ilk sayfasını kullanıyoruz.
         test_url = f"{base_url}/api/movie/by/filtres/0/created/0/{API_KEY}/"
         print(f"[*] Deneniyor: {base_url}", file=sys.stderr)
         try:
@@ -26,18 +34,21 @@ def find_working_main_url() -> str:
             if response.status_code == 200:
                 data = response.json()
                 if isinstance(data, list) and data:
+                    # Sadece listenin dolu olması yetmez, içinde link var mı diye de kontrol edelim.
                     for item in data:
                         if sources := item.get("sources"):
                             for source in sources:
                                 if url := source.get("url"):
                                     if isinstance(url, str) and url.endswith(".m3u8"):
                                         print(f"✅ Başarılı! Aktif ve geçerli sunucu bulundu: {base_url}", file=sys.stderr)
-                                        return base_url
+                                        return base_url # Çalışan ilk sunucuyu bulduk, döngüden çık.
         except requests.RequestException:
+            # Bağlantı hatası olursa sessizce diğerine geç.
             continue
-    return ""
+            
+    return "" # Eğer tüm aralıkta sunucu bulunamazsa boş döner.
 
-# --- BÖLÜM 2: VERİ ÇEKME VE İŞLEME FONKSİYONLARI ---
+# --- BÖLÜM 2: VERİ ÇEKME VE İŞLEME FONKSİYONLARI (Değişiklik yok) ---
 
 MAIN_URL = ""
 
@@ -49,7 +60,6 @@ def fetch_url(url: str) -> Optional[Any]:
         return None
 
 def get_all_pages(base_url: str, category_name: str) -> List[Dict]:
-    """Bir kategori için tüm sayfaları sonuna kadar çeker."""
     all_items = []
     page = 0
     with tqdm(desc=category_name, unit=" sayfa") as pbar:
@@ -93,7 +103,6 @@ def get_series() -> List[Dict]:
         futures = [executor.submit(get_all_pages, f"{MAIN_URL}/api/serie/by/filtres/{cat_id}/created/", cat_name) for cat_id, cat_name in series_categories]
         for future in as_completed(futures):
             all_series.extend(future.result())
-    # Tekrar eden dizileri ID'ye göre temizle
     return list({s['id']: s for s in all_series}.values())
 
 def get_episodes_for_serie(serie: Dict) -> List[Dict]:
@@ -101,7 +110,7 @@ def get_episodes_for_serie(serie: Dict) -> List[Dict]:
     url = f"{MAIN_URL}/api/season/by/serie/{serie_id}/{API_KEY}/"
     return fetch_url(url) or []
 
-# --- BÖLÜM 3: M3U OLUŞTURMA ---
+# --- BÖLÜM 3: M3U OLUŞTURMA (Değişiklik yok) ---
 
 def generate_m3u():
     global MAIN_URL
@@ -113,7 +122,6 @@ def generate_m3u():
     with open(OUTPUT_FILENAME, "w", encoding="utf-8") as f:
         f.write("#EXTM3U\n\n")
         
-        # Canlı Yayınlar
         live_data = get_live_channels()
         for category, channels in live_data.items():
             for channel in channels:
@@ -123,7 +131,6 @@ def generate_m3u():
                         f.write(f'#EXTINF:-1 tvg-id="{channel.get("id", "")}" tvg-name="{name}" tvg-logo="{channel.get("image", "")}" group-title="{category}",{name}\n')
                         f.write(PROXY_URL_FORMAT.format(url=url) + '\n\n')
 
-        # Filmler
         movie_data = get_movies()
         for category, movies in movie_data.items():
             for movie in movies:
@@ -133,9 +140,8 @@ def generate_m3u():
                             name = movie.get('title', 'Bilinmeyen Film')
                             f.write(f'#EXTINF:-1 tvg-id="{movie.get("id", "")}" tvg-name="{name}" tvg-logo="{movie.get("image", "")}" group-title="Filmler;{category}",{name}\n')
                             f.write(PROXY_URL_FORMAT.format(url=url) + '\n\n')
-                            break # Her film için sadece ilk m3u8 linkini al
+                            break
 
-        # Diziler
         all_series_list = get_series()
         print(f"\nToplam {len(all_series_list)} benzersiz dizi için bölümler taranıyor...", file=sys.stderr)
         with ThreadPoolExecutor(max_workers=10) as executor:
@@ -153,7 +159,7 @@ def generate_m3u():
                                     ep_name = f"{serie_name} S{s_num.zfill(2)}E{e_num.zfill(2)}"
                                     f.write(f'#EXTINF:-1 tvg-id="{episode.get("id", "")}" tvg-name="{ep_name}" tvg-logo="{serie_image}" group-title="Diziler;{serie_name}",{ep_name}\n')
                                     f.write(PROXY_URL_FORMAT.format(url=url) + '\n\n')
-                                    break # Her bölüm için sadece ilk m3u8 linkini al
+                                    break
 
     print(f"\n✅ Playlist oluşturma başarıyla tamamlandı: {OUTPUT_FILENAME}", file=sys.stderr)
 
