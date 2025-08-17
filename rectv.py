@@ -1,213 +1,130 @@
-import requests
+import json
+import urllib.request
+import urllib.error
+import re
 import os
 import sys
-import re
-import json
-from tqdm import tqdm
-from typing import Dict, List, Optional, Any
+from typing import Dict, List, Optional, Set
 
-# --- BÖLMƏ 1: AYARLAR VƏ GÜVƏNİLİR SUNUCU BULUCU ---
-
-API_KEY = '4F5A9C3D9A86FA54EACEDDD635185/c3c5bd17-e37b-4b94-a944-8a3688a30452'
-HEADERS = {"User-Agent": "okhttp/4.12.0", "Referer": "https://twitter.com/"}
-OUTPUT_FILENAME = "rectv_full.m3u"
+# API Konfigürasyon
+DEFAULT_BASE_URL = 'https://m.prectv52.lol'
 SOURCE_URL = 'https://raw.githubusercontent.com/kerimmkirac/cs-kerim2/main/RecTV/src/main/kotlin/com/kerimmkirac/RecTV.kt'
+API_KEY = '4F5A9C3D9A86FA54EACEDDD635185/c3c5bd17-e37b-4b94-a944-8a3688a30452'
+SUFFIX = f'/{API_KEY}'
 
-# Sunucu arama aralığı, gerekirse kolayca değiştirilebilir
-SEARCH_RANGE_START = 40
-SEARCH_RANGE_END = 150 # Aralığı daha da genişlettik
+# Kullanıcı ayarları
+USER_AGENT = 'googleusercontent'
+REFERER = 'https://twitter.com/'
 
-def is_url_working_and_has_content(base_url: str) -> bool:
-    """Bir URL'nin çalışıp çalışmadığını ve içinde veri olup olmadığını test eder."""
-    if not base_url: return False
-    test_url = f"{base_url}/api/movie/by/filtres/0/created/0/{API_KEY}/"
+def is_base_url_working(base_url: str) -> bool:
+    """Base URL'nin çalışıp çalışmadığını kontrol et"""
+    test_url = f"{base_url}/api/channel/by/filtres/0/0/0{SUFFIX}"
     try:
-        response = requests.get(test_url, headers=HEADERS, timeout=15)
-        if response.status_code == 200:
-            data = response.json()
-            return isinstance(data, list) and len(data) > 0
-    except requests.RequestException as e:
-        print(f"URL test hatası: {base_url} -> {e}", file=sys.stderr)
+        req = urllib.request.Request(
+            test_url,
+            headers={'User-Agent': 'okhttp/4.12.0'}
+        )
+        with urllib.request.urlopen(req, timeout=10) as response:
+            return response.status == 200
+    except:
         return False
-    return False
 
-def get_url_from_github() -> str:
-    """GitHub reposundan en güncel URL'yi almayı dener."""
+def get_dynamic_base_url() -> str:
+    """GitHub'dan dinamik olarak Base URL'yi al"""
     try:
-        print("Öncelikli kaynak (GitHub) kontrol ediliyor...", file=sys.stderr)
-        response = requests.get(SOURCE_URL, timeout=15)
-        response.raise_for_status()
-        content = response.text
-        match = re.search(r'override\s+var\s+mainUrl\s*=\s*"([^"]+)"', content)
-        if match:
-            url = match.group(1).strip('/')
-            print(f"GitHub'dan bulunan URL: {url}", file=sys.stderr)
-            return url
-    except requests.RequestException as e:
+        with urllib.request.urlopen(SOURCE_URL) as response:
+            content = response.read().decode('utf-8')
+            if match := re.search(r'override\s+var\s+mainUrl\s*=\s*"([^"]+)"', content):
+                return match.group(1)
+    except Exception as e:
         print(f"GitHub'dan URL alınamadı: {e}", file=sys.stderr)
-    return ""
+    return DEFAULT_BASE_URL
 
-def find_working_main_url() -> str:
-    """Çalışan ilk geçerli ana URL'yi bulur."""
-    github_url = get_url_from_github()
-    if is_url_working_and_has_content(github_url):
-        print(f"✅ Öncelikli kaynak aktif: {github_url}", file=sys.stderr)
-        return github_url
-
-    print(f"Öncelikli kaynak çalışmıyor. Geniş aralık ({SEARCH_RANGE_START}-{SEARCH_RANGE_END}) taranacak...", file=sys.stderr)
-    for i in range(SEARCH_RANGE_START, SEARCH_RANGE_END + 1):
-        base_url = f"https://m.prectv{i}.sbs"
-        print(f"[*] Deneniyor: {base_url}", file=sys.stderr)
-        if is_url_working_and_has_content(base_url):
-            print(f"✅ Aktif sunucu bulundu: {base_url}", file=sys.stderr)
-            return base_url
-    return ""
-
-# --- BÖLÜM 2: SIRALI (GÜVENİLİR) VERİ ÇEKME ---
-
-MAIN_URL = ""
-
-def fetch_url(url: str) -> Optional[Any]:
-    """Verilen URL'den JSON verisi çeker."""
+def fetch_data(url: str) -> Optional[List[Dict]]:
+    """API'den veri çek"""
     try:
-        response = requests.get(url, headers=HEADERS, timeout=20)
-        return response.json() if response.status_code == 200 else None
-    except requests.RequestException:
+        req = urllib.request.Request(
+            url,
+            headers={
+                'User-Agent': USER_AGENT,
+                'Referer': REFERER
+            }
+        )
+        with urllib.request.urlopen(req, timeout=15) as response:
+            return json.loads(response.read().decode('utf-8'))
+    except Exception as e:
+        print(f"API hatası ({url}): {e}", file=sys.stderr)
         return None
 
-def get_all_pages(base_url: str, category_name: str) -> List[Dict]:
-    """Bir kategori için tüm sayfaları sonuna kadar çeker."""
-    all_items = []
-    page = 0
-    with tqdm(desc=category_name, unit=" sayfa") as pbar:
-        while True:
-            url = f"{base_url}{page}/{API_KEY}/"
-            data = fetch_url(url)
-            if not data or not isinstance(data, list) or len(data) == 0:
-                break
-            all_items.extend(data)
-            page += 1
-            pbar.update(1)
-            pbar.set_postfix({'Toplam': len(all_items)})
-    return all_items
+def process_content(content: Dict, category_name: str) -> str:
+    """İçeriği M3U formatına dönüştür"""
+    m3u_lines = []
+    if not content.get('sources'):
+        return ''
 
-def get_episodes_for_serie(serie: Dict) -> List[Dict]:
-    """Bir diziye ait tüm sezon ve bölümleri çeker."""
-    if not (serie_id := serie.get('id')): return []
-    url = f"{MAIN_URL}/api/season/by/serie/{serie_id}/{API_KEY}/"
-    return fetch_url(url) or []
+    for source in content['sources']:
+        if source.get('type') == 'm3u8' and source.get('url'):
+            title = content.get('title', '')
+            image = content.get('image', '')
+            content_id = content.get('id', '')
 
-# --- BÖLÜM 3: M3U OLUŞTURMA (TÜM İÇERİK) ---
+            m3u_lines.append(
+                f'#EXTINF:-1 tvg-id="{content_id}" tvg-name="{title}" '
+                f'tvg-logo="{image}" group-title="{category_name}", {title}\n'
+                f'#EXTVLCOPT:http-user-agent={USER_AGENT}\n'
+                f'#EXTVLCOPT:http-referrer={REFERER}\n'
+                f"{source['url']}\n"
+            )
+    return ''.join(m3u_lines)
 
-def generate_m3u():
-    global MAIN_URL
-    MAIN_URL = find_working_main_url()
-    if not MAIN_URL:
-        print("HATA: Çalışan hiçbir sunucu bulunamadı. Script sonlandırılıyor.", file=sys.stderr)
-        sys.exit(1)
+def main():
+    # Base URL'yi belirle
+    base_url = DEFAULT_BASE_URL if is_base_url_working(DEFAULT_BASE_URL) else get_dynamic_base_url()
+    print(f"Kullanılan Base URL: {base_url}", file=sys.stderr)
 
-    with open(OUTPUT_FILENAME, "w", encoding="utf-8") as f:
-        f.write("#EXTM3U\n\n")
-        
-        # 1. Canlı Yayınlar
-        print("\n📺 Canlı yayınlar taranıyor...", file=sys.stderr)
-        live_base_url = f"{MAIN_URL}/api/channel/by/filtres/0/0/"
-        all_channels = get_all_pages(live_base_url, "Canlı Yayınlar")
-        print(f"-> Tarama tamamlandı. Toplam {len(all_channels)} canlı yayın bulundu.", file=sys.stderr)
-        
-        categories = {}
-        for channel in all_channels:
-            if not isinstance(channel, dict): continue
-            category_name = (channel.get('categories', [{}])[0].get('title', 'Diğer'))
-            if category_name not in categories: categories[category_name] = []
-            categories[category_name].append(channel)
-        
-        for category, channels in categories.items():
-            for channel in channels:
-                for source in channel.get('sources', []):
-                    if source.get('type') == 'm3u8' and (url := source.get('url')):
-                        name = channel.get('title', 'Bilinmeyen Kanal').split('(')[0].strip()
-                        f.write(f'#EXTINF:-1 tvg-id="{channel.get("id", "")}" tvg-name="{name}" tvg-logo="{channel.get("image", "")}" group-title="{category}",{name}\n')
-                        f.write(f'#EXTVLCOPT:http-user-agent={HEADERS["User-Agent"]}\n')
-                        f.write(f'#EXTVLCOPT:http-referrer={HEADERS["Referer"]}\n')
-                        f.write(f"{url}\n\n")
+    m3u_content = ["#EXTM3U\n"]
 
-        # 2. Filmler (TÜMÜ)
-        print("\n🎬 Mevcut TÜM filmler taranıyor. Bu işlem uzun sürebilir...", file=sys.stderr)
-        all_movies_base_url = f"{MAIN_URL}/api/movie/by/filtres/0/created/"
-        all_movies = get_all_pages(all_movies_base_url, "Tüm Filmler")
-        print(f"-> Tarama tamamlandı. Toplam {len(all_movies)} film bulundu.", file=sys.stderr)
-        
-        if all_movies:
-            movie_groups = {}
-            for movie in tqdm(all_movies, desc="Filmler İşleniyor"):
-                try:
-                    genres_data = movie.get('genres', 'Diğer Filmler')
-                    cat_name = ""
-                    if isinstance(genres_data, list):
-                        genre_names = [item.get('title', '') if isinstance(item, dict) else str(item) for item in genres_data]
-                        cat_name = ', '.join(filter(None, genre_names))
-                    else:
-                        cat_name = str(genres_data).strip()
-                    
-                    if not cat_name: cat_name = "Diğer Filmler"
-                    
-                    if cat_name not in movie_groups: movie_groups[cat_name] = []
-                    movie_groups[cat_name].append(movie)
-                except Exception as e:
-                    movie_title = movie.get('title', 'ID Bilinmiyor')
-                    print(f"\n[HATA] '{movie_title}' filmi işlenirken hata: {e}. Bu film atlanıyor.", file=sys.stderr)
-                    continue
+    # CANLI YAYINLAR (0-3 arası sayfalar)
+    for page in range(4):
+        url = f"{base_url}/api/channel/by/filtres/0/0/{page}{SUFFIX}"
+        if data := fetch_data(url):
+            for content in data:
+                m3u_content.append(process_content(content, "Canlı Yayınlar"))
 
-            for cat_name, movies in movie_groups.items():
-                for movie in movies:
-                    for source in movie.get('sources', []):
-                        if (url := source.get('url')) and isinstance(url, str) and url.endswith('.m3u8'):
-                            name = movie.get('title', 'Bilinmeyen Film')
-                            f.write(f'#EXTINF:-1 tvg-id="{movie.get("id", "")}" tvg-name="{name}" tvg-logo="{movie.get("image", "")}" group-title="Filmler;{cat_name}",{name}\n')
-                            f.write(f'#EXTVLCOPT:http-user-agent={HEADERS["User-Agent"]}\n')
-                            f.write(f'#EXTVLCOPT:http-referrer={HEADERS["Referer"]}\n')
-                            f.write(f"{url}\n\n")
-                            break
-        else:
-            print("-> Hiç film bulunamadığı için film bölümü atlanıyor.", file=sys.stderr)
+    # FİLMLER (Tüm kategoriler)
+    movie_categories = {
+        "0": "Son Filmler",
+        "14": "Aile",
+        "1": "Aksiyon",
+        "13": "Animasyon",
+        "19": "Belgesel Filmleri",
+        "4": "Bilim Kurgu",
+        "2": "Dram",
+        "10": "Fantastik",
+        "3": "Komedi",
+        "8": "Korku",
+        "17": "Macera",
+        "5": "Romantik"
+    }
 
+    for category_id, category_name in movie_categories.items():
+        for page in range(8):  # 0-7 arası sayfalar
+            url = f"{base_url}/api/movie/by/filtres/{category_id}/created/{page}{SUFFIX}"
+            if data := fetch_data(url):
+                for content in data:
+                    m3u_content.append(process_content(content, category_name))
 
-        # 3. Diziler (TÜMÜ)
-        print("\n🎞️ Mevcut TÜM diziler taranıyor. Bu işlem de uzun sürebilir...", file=sys.stderr)
-        all_series_base_url = f"{MAIN_URL}/api/serie/by/filtres/0/created/"
-        all_series = get_all_pages(all_series_base_url, "Tüm Diziler")
-        print(f"-> Tarama tamamlandı. Toplam {len(all_series)} dizi bulundu.", file=sys.stderr)
-        
-        if all_series:
-            unique_series = list({s['id']: s for s in all_series if 'id' in s}.values())
-            print(f"\n-> Toplam {len(unique_series)} benzersiz dizi için bölümler taranıyor...", file=sys.stderr)
-            
-            for serie in tqdm(unique_series, desc="Dizi Bölümleri İşleniyor"):
-                try:
-                    seasons = get_episodes_for_serie(serie)
-                    serie_name, serie_image = serie.get('title', 'Bilinmeyen Dizi'), serie.get('image', '')
-                    for season in seasons:
-                        for episode in season.get('episodes', []):
-                            for source in episode.get('sources', []):
-                                if (url := source.get('url')) and isinstance(url, str) and url.endswith('.m3u8'):
-                                    s_num = ''.join(filter(str.isdigit, season.get('title', ''))) or '0'
-                                    e_num = ''.join(filter(str.isdigit, episode.get('title', ''))) or '0'
-                                    ep_name = f"{serie_name} S{s_num.zfill(2)}E{e_num.zfill(2)}"
-                                    f.write(f'#EXTINF:-1 tvg-id="{episode.get("id", "")}" tvg-name="{ep_name}" tvg-logo="{serie_image}" group-title="Diziler;{serie_name}",{ep_name}\n')
-                                    f.write(f'#EXTVLCOPT:http-user-agent={HEADERS["User-Agent"]}\n')
-                                    f.write(f'#EXTVLCOPT:http-referrer={HEADERS["Referer"]}\n')
-                                    f.write(f"{url}\n\n")
-                                    break
-                except Exception as e:
-                    serie_title = serie.get('title', 'ID Bilinmiyor')
-                    print(f"\n[HATA] '{serie_title}' dizisi işlenirken hata: {e}. Bu dizi atlanıyor.", file=sys.stderr)
-                    continue
-        else:
-            print("-> Hiç dizi bulunamadığı için dizi bölümü atlanıyor.", file=sys.stderr)
+    # DİZİLER
+    for page in range(8):  # 0-7 arası sayfalar
+        url = f"{base_url}/api/serie/by/filtres/0/created/{page}{SUFFIX}"
+        if data := fetch_data(url):
+            for content in data:
+                m3u_content.append(process_content(content, "Son Diziler"))
 
-
-    print(f"\n✅ Playlist oluşturma başarıyla tamamlandı: {OUTPUT_FILENAME}", file=sys.stderr)
+    # Dosyaya yaz
+    with open('rectv_full.m3u', 'w', encoding='utf-8') as f:
+        f.write(''.join(m3u_content))
+    print("M3U dosyası başarıyla oluşturuldu!", file=sys.stderr)
 
 if __name__ == "__main__":
-    generate_m3u()
+    main()
