@@ -6,7 +6,7 @@ import json
 from tqdm import tqdm
 from typing import Dict, List, Optional, Any
 
-# --- BÖLÜM 1: AYARLAR VE GÜVENİLİR SUNUCU BULUCU ---
+# --- BÖLMƏ 1: AYARLAR VƏ GÜVƏNİLİR SUNUCU BULUCU ---
 
 API_KEY = '4F5A9C3D9A86FA54EACEDDD635185/c3c5bd17-e37b-4b94-a944-8a3688a30452'
 HEADERS = {"User-Agent": "okhttp/4.12.0", "Referer": "https://twitter.com/"}
@@ -20,14 +20,11 @@ SEARCH_RANGE_END = 150 # Aralığı daha da genişlettik
 def is_url_working_and_has_content(base_url: str) -> bool:
     """Bir URL'nin çalışıp çalışmadığını ve içinde veri olup olmadığını test eder."""
     if not base_url: return False
-    # Filtre ID'si 0, genellikle "Tümü" veya "Son Eklenenler" anlamına gelir ve en güvenilir test noktasıdır.
     test_url = f"{base_url}/api/movie/by/filtres/0/created/0/{API_KEY}/"
     try:
-        # Timeout süresini biraz artırarak zayıf bağlantılarda hata almayı önleyelim.
         response = requests.get(test_url, headers=HEADERS, timeout=15)
         if response.status_code == 200:
             data = response.json()
-            # API'den geçerli ve dolu bir liste dönüp dönmediğini kontrol et
             return isinstance(data, list) and len(data) > 0
     except requests.RequestException as e:
         print(f"URL test hatası: {base_url} -> {e}", file=sys.stderr)
@@ -41,7 +38,6 @@ def get_url_from_github() -> str:
         response = requests.get(SOURCE_URL, timeout=15)
         response.raise_for_status()
         content = response.text
-        # Regex ile ana URL'yi kodun içinden bul
         match = re.search(r'override\s+var\s+mainUrl\s*=\s*"([^"]+)"', content)
         if match:
             url = match.group(1).strip('/')
@@ -59,7 +55,6 @@ def find_working_main_url() -> str:
         return github_url
 
     print(f"Öncelikli kaynak çalışmıyor. Geniş aralık ({SEARCH_RANGE_START}-{SEARCH_RANGE_END}) taranacak...", file=sys.stderr)
-    # Belirtilen aralıktaki tüm potansiyel sunucuları dene
     for i in range(SEARCH_RANGE_START, SEARCH_RANGE_END + 1):
         base_url = f"https://m.prectv{i}.sbs"
         print(f"[*] Deneniyor: {base_url}", file=sys.stderr)
@@ -84,19 +79,15 @@ def get_all_pages(base_url: str, category_name: str) -> List[Dict]:
     """Bir kategori için tüm sayfaları sonuna kadar çeker."""
     all_items = []
     page = 0
-    # tqdm ile ilerleme çubuğu oluşturarak kullanıcıyı bilgilendir
     with tqdm(desc=category_name, unit=" sayfa") as pbar:
         while True:
-            # Sayfa numarasını URL'ye ekleyerek sıradaki sayfayı iste
             url = f"{base_url}{page}/{API_KEY}/"
             data = fetch_url(url)
-            # API'den boş veya geçersiz veri gelirse döngüyü sonlandır
             if not data or not isinstance(data, list) or len(data) == 0:
                 break
             all_items.extend(data)
             page += 1
             pbar.update(1)
-            # İlerleme çubuğunda toplam çekilen içerik sayısını göster
             pbar.set_postfix({'Toplam': len(all_items)})
     return all_items
 
@@ -146,15 +137,23 @@ def generate_m3u():
         
         movie_groups = {}
         for movie in all_movies:
-            # --- HATA DÜZELTMESİ BURADA ---
-            genres = movie.get('genres', 'Diğer Filmler')
+            # --- YENİ HATA DÜZELTMESİ BURADA ---
+            genres_data = movie.get('genres', 'Diğer Filmler')
             cat_name = ""
-            if isinstance(genres, list):
-                # Eğer 'genres' bir liste ise (örn: ['Aksiyon', 'Macera']), elemanları birleştir.
-                cat_name = ', '.join(genres)
+            if isinstance(genres_data, list):
+                genre_names = []
+                for item in genres_data:
+                    if isinstance(item, dict):
+                        # Eğer öğe bir sözlükse, 'title' anahtarından değeri al
+                        genre_names.append(item.get('title', ''))
+                    elif isinstance(item, str):
+                        # Eğer öğe bir metinse, doğrudan ekle
+                        genre_names.append(item)
+                # Sadece geçerli (boş olmayan) tür isimlerini birleştir
+                cat_name = ', '.join(filter(None, genre_names))
             else:
-                # Eğer 'genres' bir metin ise, boşlukları temizle.
-                cat_name = str(genres).strip()
+                # Eğer veri zaten bir metinse, olduğu gibi kullan
+                cat_name = str(genres_data).strip()
             
             if not cat_name: cat_name = "Diğer Filmler"
             # --- DÜZELTME SONU ---
