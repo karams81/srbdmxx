@@ -7,46 +7,67 @@ from tqdm import tqdm
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Dict, List, Optional, Any
 
-# --- BÖLÜM 1: AYARLAR VE AKILLI SUNUCU BULUCU ---
+# --- BÖLÜM 1: AYARLAR VE EN KARARLI SUNUCU BULUCU ---
 
 API_KEY = '4F5A9C3D9A86FA54EACEDDD635185/c3c5bd17-e37b-4b94-a944-8a3688a30452'
 HEADERS = {"User-Agent": "okhttp/4.12.0", "Referer": "https://twitter.com/"}
 PROXY_URL_FORMAT = "https://1.nejyoner19.workers.dev/?url={url}"
-OUTPUT_FILENAME = "rectv_full.m3u" # YML dosyası ile uyumlu isim
+OUTPUT_FILENAME = "rectv_full.m3u"
+SOURCE_URL = 'https://raw.githubusercontent.com/kerimmkirac/cs-kerim2/main/RecTV/src/main/kotlin/com/kerimmkirac/RecTV.kt'
+
+def is_url_working_and_has_content(base_url: str) -> bool:
+    """
+    Bir URL'nin çalışıp çalışmadığını ve içinde veri olup olmadığını test eder.
+    Bu yeni, daha esnek bir kontroldür.
+    """
+    if not base_url:
+        return False
+    test_url = f"{base_url}/api/movie/by/filtres/0/created/0/{API_KEY}/"
+    try:
+        response = requests.get(test_url, headers=HEADERS, timeout=15)
+        if response.status_code == 200:
+            data = response.json()
+            # Sunucunun aktif ve içinde liste formatında veri olduğunu doğrula
+            return isinstance(data, list) and len(data) > 0
+    except requests.RequestException:
+        return False
+    return False
+
+def get_url_from_github() -> str:
+    """GitHub reposundan en güncel URL'yi almayı dener."""
+    try:
+        print("Öncelikli kaynak (GitHub) kontrol ediliyor...", file=sys.stderr)
+        response = requests.get(SOURCE_URL, timeout=15)
+        response.raise_for_status()
+        content = response.text
+        match = re.search(r'override\s+var\s+mainUrl\s*=\s*"([^"]+)"', content)
+        if match:
+            url = match.group(1).strip('/')
+            print(f"GitHub'dan bulunan URL: {url}", file=sys.stderr)
+            return url
+    except requests.RequestException as e:
+        print(f"GitHub'dan URL alınamadı: {e}", file=sys.stderr)
+    return ""
 
 def find_working_main_url() -> str:
-    """
-    40-120 arası domainleri tarar ve içinde geçerli .m3u8 linki olan ilk sunucuyu bulur.
-    """
-    # --- DEĞİŞİKLİK BURADA ---
-    # Arama aralığı genişletildi.
-    search_range_start = 40
-    search_range_end = 120
-    print(f"🚀 En iyi sunucu aranıyor ({search_range_start}-{search_range_end})...", file=sys.stderr)
+    """Çalışan ilk geçerli ana URL'yi bulur."""
     
-    for i in range(search_range_start, search_range_end + 1):
+    # 1. Öncelik: Her zaman orijinal kaynaktaki URL'yi dene
+    github_url = get_url_from_github()
+    if is_url_working_and_has_content(github_url):
+        print(f"✅ Öncelikli kaynak aktif: {github_url}", file=sys.stderr)
+        return github_url
+
+    # 2. Öncelik: Geniş aralığı tara
+    print("Öncelikli kaynak çalışmıyor. Geniş aralık taranacak (40-120)...", file=sys.stderr)
+    for i in range(40, 121):
         base_url = f"https://m.prectv{i}.sbs"
-        # Test için en garanti yol olan filmlerin ilk sayfasını kullanıyoruz.
-        test_url = f"{base_url}/api/movie/by/filtres/0/created/0/{API_KEY}/"
         print(f"[*] Deneniyor: {base_url}", file=sys.stderr)
-        try:
-            response = requests.get(test_url, headers=HEADERS, timeout=15)
-            if response.status_code == 200:
-                data = response.json()
-                if isinstance(data, list) and data:
-                    # Sadece listenin dolu olması yetmez, içinde link var mı diye de kontrol edelim.
-                    for item in data:
-                        if sources := item.get("sources"):
-                            for source in sources:
-                                if url := source.get("url"):
-                                    if isinstance(url, str) and url.endswith(".m3u8"):
-                                        print(f"✅ Başarılı! Aktif ve geçerli sunucu bulundu: {base_url}", file=sys.stderr)
-                                        return base_url # Çalışan ilk sunucuyu bulduk, döngüden çık.
-        except requests.RequestException:
-            # Bağlantı hatası olursa sessizce diğerine geç.
-            continue
+        if is_url_working_and_has_content(base_url):
+            print(f"✅ Aktif sunucu bulundu: {base_url}", file=sys.stderr)
+            return base_url
             
-    return "" # Eğer tüm aralıkta sunucu bulunamazsa boş döner.
+    return ""
 
 # --- BÖLÜM 2: VERİ ÇEKME VE İŞLEME FONKSİYONLARI (Değişiklik yok) ---
 
