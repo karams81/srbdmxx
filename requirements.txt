@@ -2,3 +2,4 @@ requests
 beautifulsoup4
 tqdm
 python-slugify
+requests==2.31.0
