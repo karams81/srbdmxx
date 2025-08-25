@@ -19,6 +19,8 @@ https://dygvideo.dygdigital.com/api/redirect?PublisherId=27&ReferenceId=EHD_2433
 https://dygvideo.dygdigital.com/api/redirect?PublisherId=27&ReferenceId=EHD_243359&SecretKey=NtvApiSecret2014*
 #EXTINF:-1 tvg-logo="https://img-tlctv1.mncdn.com/mnresize/200/-/upload/files/9cd9e9c6-2d0d-4a04-a9c9-aad138595976.jpg" group-title="AĞAÇ EV EKİBİ",AĞAÇ EV EKİBİ - 3. Sezon 4. Bölüm
 https://dygvideo.dygdigital.com/api/redirect?PublisherId=27&ReferenceId=EHD_243358&SecretKey=NtvApiSecret2014*
+#EXTINF:-1 tvg-logo="https://img-tlctv1.mncdn.com/mnresize/200/-/upload/files/9cd9e9c6-2d0d-4a04-a9c9-aad138595976.jpg" group-title="AĞAÇ EV EKİBİ",AĞAÇ EV EKİBİ - 3. Sezon 3. Bölüm
+https://dygvideo.dygdigital.com/api/redirect?PublisherId=27&ReferenceId=EHD_243357&SecretKey=NtvApiSecret2014*
 #EXTINF:-1 tvg-logo="https://img-tlctv1.mncdn.com/mnresize/200/-/upload/files/9cd9e9c6-2d0d-4a04-a9c9-aad138595976.jpg" group-title="AĞAÇ EV EKİBİ",AĞAÇ EV EKİBİ - 3. Sezon 2. Bölüm
 https://dygvideo.dygdigital.com/api/redirect?PublisherId=27&ReferenceId=EHD_243356&SecretKey=NtvApiSecret2014*
 #EXTINF:-1 tvg-logo="https://img-tlctv1.mncdn.com/mnresize/200/-/upload/files/9cd9e9c6-2d0d-4a04-a9c9-aad138595976.jpg" group-title="AĞAÇ EV EKİBİ",AĞAÇ EV EKİBİ - 3. Sezon 1. Bölüm
@@ -631,8 +633,6 @@ https://dygvideo.dygdigital.com/api/redirect?PublisherId=27&ReferenceId=EHD_2407
 https://dygvideo.dygdigital.com/api/redirect?PublisherId=27&ReferenceId=EHD_240791&SecretKey=NtvApiSecret2014*
 #EXTINF:-1 tvg-logo="https://img-tlctv1.mncdn.com/mnresize/200/-/upload/files/10499059-218f-445c-ace4-5d1aab600062.jpg" group-title="ALASKA'NIN MİMARLARI",ALASKA'NIN MİMARLARI - 7. Sezon 3. Bölüm
 https://dygvideo.dygdigital.com/api/redirect?PublisherId=27&ReferenceId=EHD_240790&SecretKey=NtvApiSecret2014*
-#EXTINF:-1 tvg-logo="https://img-tlctv1.mncdn.com/mnresize/200/-/upload/files/10499059-218f-445c-ace4-5d1aab600062.jpg" group-title="ALASKA'NIN MİMARLARI",ALASKA'NIN MİMARLARI - 7. Sezon 2. Bölüm
-https://dygvideo.dygdigital.com/api/redirect?PublisherId=27&ReferenceId=EHD_240789&SecretKey=NtvApiSecret2014*
 #EXTINF:-1 tvg-logo="https://img-tlctv1.mncdn.com/mnresize/200/-/upload/files/10499059-218f-445c-ace4-5d1aab600062.jpg" group-title="ALASKA'NIN MİMARLARI",ALASKA'NIN MİMARLARI - 7. Sezon 1. Bölüm
 https://dygvideo.dygdigital.com/api/redirect?PublisherId=27&ReferenceId=EHD_240788&SecretKey=NtvApiSecret2014*
 #EXTINF:-1 tvg-logo="https://img-tlctv1.mncdn.com/mnresize/200/-/upload/files/10499059-218f-445c-ace4-5d1aab600062.jpg" group-title="ALASKA'NIN MİMARLARI",ALASKA'NIN MİMARLARI - 6. Sezon 8. Bölüm
@@ -2907,6 +2907,8 @@ https://dygvideo.dygdigital.com/api/redirect?PublisherId=27&ReferenceId=EHD_1675
 https://dygvideo.dygdigital.com/api/redirect?PublisherId=27&ReferenceId=EHD_167564&SecretKey=NtvApiSecret2014*
 #EXTINF:-1 tvg-logo="https://img-tlctv1.mncdn.com/mnresize/200/-/upload/files/39f2ce8a-dba4-4802-a219-16cd37f02558.jpg" group-title="BERİNG BOĞAZI'NDA ALTIN",BERİNG BOĞAZI'NDA ALTIN - 6. Sezon 5. Bölüm
 https://dygvideo.dygdigital.com/api/redirect?PublisherId=27&ReferenceId=EHD_167563&SecretKey=NtvApiSecret2014*
+#EXTINF:-1 tvg-logo="https://img-tlctv1.mncdn.com/mnresize/200/-/upload/files/39f2ce8a-dba4-4802-a219-16cd37f02558.jpg" group-title="BERİNG BOĞAZI'NDA ALTIN",BERİNG BOĞAZI'NDA ALTIN - 6. Sezon 4. Bölüm
+https://dygvideo.dygdigital.com/api/redirect?PublisherId=27&ReferenceId=EHD_167562&SecretKey=NtvApiSecret2014*
 #EXTINF:-1 tvg-logo="https://img-tlctv1.mncdn.com/mnresize/200/-/upload/files/39f2ce8a-dba4-4802-a219-16cd37f02558.jpg" group-title="BERİNG BOĞAZI'NDA ALTIN",BERİNG BOĞAZI'NDA ALTIN - 6. Sezon 3. Bölüm
 https://dygvideo.dygdigital.com/api/redirect?PublisherId=27&ReferenceId=EHD_167561&SecretKey=NtvApiSecret2014*
 #EXTINF:-1 tvg-logo="https://img-tlctv1.mncdn.com/mnresize/200/-/upload/files/39f2ce8a-dba4-4802-a219-16cd37f02558.jpg" group-title="BERİNG BOĞAZI'NDA ALTIN",BERİNG BOĞAZI'NDA ALTIN - 6. Sezon 2. Bölüm
@@ -6447,6 +6449,8 @@ https://dygvideo.dygdigital.com/api/redirect?PublisherId=27&ReferenceId=EHD_3134
 https://dygvideo.dygdigital.com/api/redirect?PublisherId=27&ReferenceId=EHD_313489&SecretKey=NtvApiSecret2014*
 #EXTINF:-1 tvg-logo="https://img-tlctv1.mncdn.com/mnresize/200/-/upload/files/23fae414-1c7b-4996-9c92-6721a4cd6137.jpg" group-title="HURDA AVCILARI",HURDA AVCILARI - 15. Sezon 3. Bölüm
 https://dygvideo.dygdigital.com/api/redirect?PublisherId=27&ReferenceId=EHD_313488&SecretKey=NtvApiSecret2014*
+#EXTINF:-1 tvg-logo="https://img-tlctv1.mncdn.com/mnresize/200/-/upload/files/23fae414-1c7b-4996-9c92-6721a4cd6137.jpg" group-title="HURDA AVCILARI",HURDA AVCILARI - 15. Sezon 1. Bölüm
+https://dygvideo.dygdigital.com/api/redirect?PublisherId=27&ReferenceId=EHD_313486&SecretKey=NtvApiSecret2014*
 #EXTINF:-1 tvg-logo="https://img-tlctv1.mncdn.com/mnresize/200/-/upload/files/23fae414-1c7b-4996-9c92-6721a4cd6137.jpg" group-title="HURDA AVCILARI",HURDA AVCILARI - 14. Sezon 23. Bölüm
 https://dygvideo.dygdigital.com/api/redirect?PublisherId=27&ReferenceId=EHD_326313&SecretKey=NtvApiSecret2014*
 #EXTINF:-1 tvg-logo="https://img-tlctv1.mncdn.com/mnresize/200/-/upload/files/23fae414-1c7b-4996-9c92-6721a4cd6137.jpg" group-title="HURDA AVCILARI",HURDA AVCILARI - 14. Sezon 22. Bölüm
