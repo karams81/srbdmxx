@@ -1,0 +1,60 @@
+# Bu GitHub Actions iş akışının adı
+name: Generate M3U Lists
+
+on:
+  # Zamanlanmış görev: 12 saatte bir otomatik olarak çalışır
+  schedule:
+    - cron: '0 */12 * * *'
+  # Manuel tetikleme: GitHub'ın Actions sekmesinden elle çalıştırılabilir
+  workflow_dispatch:
+
+jobs:
+  build:
+    # Görevin çalışacağı sanal makine
+    runs-on: ubuntu-latest
+    
+    # Depoya yazma izni. Bu olmadan 'git push' başarısız olur.
+    permissions:
+      contents: write
+
+    steps:
+    # 1. Adım: Depodaki kodları sanal makineye indirir
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    # 2. Adım: Belirtilen PHP sürümünü kurar
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.2'
+
+    # 3. Adım: Üç PHP betiğini de sırayla çalıştırır
+    - name: Run PHP Generators
+      run: |
+        php canli_tv.php
+        php filmler.php
+        php diziler.php
+
+    # 4. Adım: Oluşturulan dosyaları kontrol eder ve değişiklik varsa depoya gönderir
+    - name: Commit & Push if Changes
+      run: |
+        # Git işlemleri için bot kullanıcısını yapılandır
+        git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git config --global user.name "github-actions[bot]"
+        
+        # Oluşturulan M3U dosyalarını 'staging' alanına ekle.
+        # Dosyalardan biri veya hepsi oluşturulmamışsa bu komut hata vermez.
+        git add canli_tv.m3u filmler.m3u diziler.m3u
+        
+        # Değişiklik olup olmadığını kontrol et.
+        # Eğer 'staging' alanında hiçbir değişiklik yoksa (dosyalar aynıysa veya hiç oluşmadıysa),
+        # komut sessizce başarılı olur ve sonraki adıma geçmez.
+        if git diff --staged --quiet; then
+          echo "Mevcut M3U listelerinde değişiklik bulunamadı. Commit atılmayacak."
+          exit 0
+        fi
+        
+        # Eğer değişiklik varsa, commit at ve ana dala (main/master) push'la.
+        echo "Değişiklikler bulundu, depoya gönderiliyor..."
+        git commit -m "Update M3U lists [skip ci]"
+        git push
