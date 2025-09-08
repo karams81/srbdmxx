@@ -577,8 +577,6 @@ https://dygvideo.dygdigital.com/api/redirect?PublisherId=20&ReferenceId=EHD_2708
 https://dygvideo.dygdigital.com/api/redirect?PublisherId=20&ReferenceId=EHD_270805&SecretKey=NtvApiSecret2014*
 #EXTINF:-1 tvg-logo="https://img-tlctv1.mncdn.com/mnresize/200/-/upload/files/f97cd75d-4bcb-47f5-8bf4-987205284be3.jpg" group-title="Ada Hayatı",Ada Hayatı - 15. Sezon 3. Bölüm
 https://dygvideo.dygdigital.com/api/redirect?PublisherId=20&ReferenceId=EHD_270804&SecretKey=NtvApiSecret2014*
-#EXTINF:-1 tvg-logo="https://img-tlctv1.mncdn.com/mnresize/200/-/upload/files/f97cd75d-4bcb-47f5-8bf4-987205284be3.jpg" group-title="Ada Hayatı",Ada Hayatı - 15. Sezon 2. Bölüm
-https://dygvideo.dygdigital.com/api/redirect?PublisherId=20&ReferenceId=EHD_270803&SecretKey=NtvApiSecret2014*
 #EXTINF:-1 tvg-logo="https://img-tlctv1.mncdn.com/mnresize/200/-/upload/files/f97cd75d-4bcb-47f5-8bf4-987205284be3.jpg" group-title="Ada Hayatı",Ada Hayatı - 15. Sezon 1. Bölüm
 https://dygvideo.dygdigital.com/api/redirect?PublisherId=20&ReferenceId=EHD_270802&SecretKey=NtvApiSecret2014*
 #EXTINF:-1 tvg-logo="https://img-tlctv1.mncdn.com/mnresize/200/-/upload/files/f97cd75d-4bcb-47f5-8bf4-987205284be3.jpg" group-title="Ada Hayatı",Ada Hayatı - 13. Sezon 12. Bölüm
@@ -1485,6 +1483,8 @@ https://dygvideo.dygdigital.com/api/redirect?PublisherId=20&ReferenceId=TLC_7660
 https://dygvideo.dygdigital.com/api/redirect?PublisherId=20&ReferenceId=EHD_354087&SecretKey=NtvApiSecret2014*
 #EXTINF:-1 tvg-logo="https://img-tlctv1.mncdn.com/mnresize/200/-/upload/files/f6da9cdc-180a-44a3-aab7-e29a0e7a1a5c.jpg" group-title="Ağır Yaşamlar: Brezilya",Ağır Yaşamlar: Brezilya - 1. Sezon 3. Bölüm
 https://dygvideo.dygdigital.com/api/redirect?PublisherId=20&ReferenceId=EHD_354086&SecretKey=NtvApiSecret2014*
+#EXTINF:-1 tvg-logo="https://img-tlctv1.mncdn.com/mnresize/200/-/upload/files/f6da9cdc-180a-44a3-aab7-e29a0e7a1a5c.jpg" group-title="Ağır Yaşamlar: Brezilya",Ağır Yaşamlar: Brezilya - 1. Sezon 2. Bölüm
+https://dygvideo.dygdigital.com/api/redirect?PublisherId=20&ReferenceId=EHD_354085&SecretKey=NtvApiSecret2014*
 #EXTINF:-1 tvg-logo="https://img-tlctv1.mncdn.com/mnresize/200/-/upload/files/f6da9cdc-180a-44a3-aab7-e29a0e7a1a5c.jpg" group-title="Ağır Yaşamlar: Brezilya",Ağır Yaşamlar: Brezilya - 1. Sezon 1. Bölüm
 https://dygvideo.dygdigital.com/api/redirect?PublisherId=20&ReferenceId=EHD_354084&SecretKey=NtvApiSecret2014*
 #EXTINF:-1 tvg-logo="https://img-tlctv1.mncdn.com/mnresize/200/-/upload/files/8b0c3149-94de-41b6-ae7f-4fa873e0f9fe.jpg" group-title="Ağır Yaşamlar: İtalya",Ağır Yaşamlar: İtalya - 1. Sezon 6. Bölüm
@@ -6035,6 +6035,8 @@ https://dygvideo.dygdigital.com/api/redirect?PublisherId=20&ReferenceId=EHD_2965
 https://dygvideo.dygdigital.com/api/redirect?PublisherId=20&ReferenceId=EHD_296562&SecretKey=NtvApiSecret2014*
 #EXTINF:-1 tvg-logo="https://img-tlctv1.mncdn.com/mnresize/200/-/upload/files/866c7f0a-3baf-4345-a2e0-5d31edc57200.jpg" group-title="Evliliğe 90 Gün: Mutlu Son",Evliliğe 90 Gün: Mutlu Son - YENİ BİR SAYFA | 5. Sezon 14. Bölüm
 https://dygvideo.dygdigital.com/api/redirect?PublisherId=20&ReferenceId=EHD_96561&SecretKey=NtvApiSecret2014*
+#EXTINF:-1 tvg-logo="https://img-tlctv1.mncdn.com/mnresize/200/-/upload/files/866c7f0a-3baf-4345-a2e0-5d31edc57200.jpg" group-title="Evliliğe 90 Gün: Mutlu Son",Evliliğe 90 Gün: Mutlu Son - DÜĞÜN GÜNÜ | 5. Sezon 13. Bölüm
+https://dygvideo.dygdigital.com/api/redirect?PublisherId=20&ReferenceId=EHD_296560&SecretKey=NtvApiSecret2014*
 #EXTINF:-1 tvg-logo="https://img-tlctv1.mncdn.com/mnresize/200/-/upload/files/866c7f0a-3baf-4345-a2e0-5d31edc57200.jpg" group-title="Evliliğe 90 Gün: Mutlu Son",Evliliğe 90 Gün: Mutlu Son - KAOS ÇIKTI | 5. Sezon 12. Bölüm
 https://dygvideo.dygdigital.com/api/redirect?PublisherId=20&ReferenceId=EHD_296559&SecretKey=NtvApiSecret2014*
 #EXTINF:-1 tvg-logo="https://img-tlctv1.mncdn.com/mnresize/200/-/upload/files/866c7f0a-3baf-4345-a2e0-5d31edc57200.jpg" group-title="Evliliğe 90 Gün: Mutlu Son",Evliliğe 90 Gün: Mutlu Son - RADİKAL DEĞİŞİKLİK | 5. Sezon 11. Bölüm
@@ -10851,8 +10853,6 @@ https://dygvideo.dygdigital.com/api/redirect?PublisherId=20&ReferenceId=EHD_2353
 https://dygvideo.dygdigital.com/api/redirect?PublisherId=20&ReferenceId=EHD_235310&SecretKey=NtvApiSecret2014*
 #EXTINF:-1 tvg-logo="https://img-tlctv1.mncdn.com/mnresize/200/-/upload/files/dd8e9b93-9ff9-48ed-8faa-1d8a6547390f.jpg" group-title="Meksika Evleri",Meksika Evleri - 2. Sezon 14. Bölüm
 https://dygvideo.dygdigital.com/api/redirect?PublisherId=20&ReferenceId=EHD_235309&SecretKey=NtvApiSecret2014*
-#EXTINF:-1 tvg-logo="https://img-tlctv1.mncdn.com/mnresize/200/-/upload/files/dd8e9b93-9ff9-48ed-8faa-1d8a6547390f.jpg" group-title="Meksika Evleri",Meksika Evleri - 2. Sezon 13. Bölüm
-https://dygvideo.dygdigital.com/api/redirect?PublisherId=20&ReferenceId=EHD_235308&SecretKey=NtvApiSecret2014*
 #EXTINF:-1 tvg-logo="https://img-tlctv1.mncdn.com/mnresize/200/-/upload/files/dd8e9b93-9ff9-48ed-8faa-1d8a6547390f.jpg" group-title="Meksika Evleri",Meksika Evleri - 2. Sezon 11. Bölüm
 https://dygvideo.dygdigital.com/api/redirect?PublisherId=20&ReferenceId=EHD_235306&SecretKey=NtvApiSecret2014*
 #EXTINF:-1 tvg-logo="https://img-tlctv1.mncdn.com/mnresize/200/-/upload/files/dd8e9b93-9ff9-48ed-8faa-1d8a6547390f.jpg" group-title="Meksika Evleri",Meksika Evleri - 2. Sezon 10. Bölüm
@@ -11065,8 +11065,6 @@ https://dygvideo.dygdigital.com/api/redirect?PublisherId=20&ReferenceId=EHD_4895
 https://dygvideo.dygdigital.com/api/redirect?PublisherId=20&ReferenceId=EHD_489507&SecretKey=NtvApiSecret2014*
 #EXTINF:-1 tvg-logo="https://img-tlctv1.mncdn.com/mnresize/200/-/upload/files/26b90dae-bd1d-4045-9937-74e761e97b98.jpg" group-title="Mücevher Dünyası",Mücevher Dünyası - 1. Sezon 5. Bölüm
 https://dygvideo.dygdigital.com/api/redirect?PublisherId=20&ReferenceId=EHD_489506&SecretKey=NtvApiSecret2014*
-#EXTINF:-1 tvg-logo="https://img-tlctv1.mncdn.com/mnresize/200/-/upload/files/26b90dae-bd1d-4045-9937-74e761e97b98.jpg" group-title="Mücevher Dünyası",Mücevher Dünyası - 1. Sezon 4. Bölüm
-https://dygvideo.dygdigital.com/api/redirect?PublisherId=20&ReferenceId=EHD_489505&SecretKey=NtvApiSecret2014*
 #EXTINF:-1 tvg-logo="https://img-tlctv1.mncdn.com/mnresize/200/-/upload/files/26b90dae-bd1d-4045-9937-74e761e97b98.jpg" group-title="Mücevher Dünyası",Mücevher Dünyası - 1. Sezon 3. Bölüm
 https://dygvideo.dygdigital.com/api/redirect?PublisherId=20&ReferenceId=EHD_489504&SecretKey=NtvApiSecret2014*
 #EXTINF:-1 tvg-logo="https://img-tlctv1.mncdn.com/mnresize/200/-/upload/files/26b90dae-bd1d-4045-9937-74e761e97b98.jpg" group-title="Mücevher Dünyası",Mücevher Dünyası - 1. Sezon 2. Bölüm
